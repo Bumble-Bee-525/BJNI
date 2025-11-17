@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)https://bunny-lab-official-9618110.codehs.me/bunny.html -->
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Bunny Lab Calculator</title>
+        <link rel="icon" type="image/x-icon" href="../static/images/favicon.png">
+        <!--Bootstrap-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <style>
+            /*Don't hate on Jake even thought this CSS is kind of a crime against humanity.*/
+            * {
+              box-sizing: border-box;
+            }
+            
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            
+            header {
+                background-color: #666;
+                padding: 60px;
+                text-align: center;
+                font-size: 30px;
+                color: white;
+                height: 160px;
+            }
+            
+            section {
+                width: 100%;
+                background: #ccc;
+            }
+            
+            #myNav {
+                float: left;
+                width: 9%;
+                padding: 10px;
+                background: #ccc;
+                height: 450px;
+            }
+            
+            #myNav ul {
+                line-height: 1.6;
+                list-style-type: disc;
+                padding: 15px;
+            }
+            
+            #myDiv {
+                float: right;
+                padding: 10px;
+                width: 91%;
+                background-color: #f1f1f1;
+            }
+            
+            footer {
+                background-color: #777;
+                padding:10px;
+                text-align: left;
+                color: white;
+            }
+            
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            section::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            
+            td, th {
+                border: 1px solid black;
+                text-align: left;
+                padding: 8px;
+            }
+            
+            @media (max-width: 1000px) {
+                #myNav, #myDiv {
+                    width: 100%;
+                    height: auto;
+                }
+            }
+        </style>
+</head>
+<body>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <!--Logo-->
+        <a class="navbar-brand" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+          <img src="../static/images/logoBJ.png" width="auto" style="height: 4rem;">
+        </a>
+        <!--Toggle button for small devices-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--Searchbar for NCBI-->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <div class="navbar-nav">
+            <a class="nav-link mx-2" href="/templates/about.html">About us</a>
+            <a class="nav-link mx-2" href="/">Home</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <header>
+        Bunny Lab Calculator<sup style="font-size: 15px">TM</sup>
+    </header>
+    
+    <section>
+        <nav id="myNav">
+            <ul>
+                <li><button type="button" onclick="partOne()">Part One</button></li>
+                <li><button type="button" onclick="partTwo()">Part Two</button></li>
+                <li><button type="button" onclick="partThree()">Part Three</button></li>
+                <li><button type="button" onclick="partFour()">Part Four</button></li>
+                <li><button type="button" onclick="partFive()">Part Five</button></li>
+            </ul>
+        </nav>
+        
+        <div id="myDiv">
+            <table id="table">
+                <tbody><tr>
+                    <th style="width: 10%">Generation</th>
+                    <th style="width: 11%">Number of FF Bunnies</th>
+                    <th style="width: 11%">Number of Ff Bunnies</th>
+                    <th style="width: 11%">Number of ff Bunnies</th>
+                    <th style="width: 11%">Number of F Alleles</th>
+                    <th style="width: 11%">Number of f Alleles</th>
+                    <th style="width: 11%">Total Number of Alleles</th>
+                    <th style="width: 12%">Allele Frequency of F</th>
+                    <th style="width: 12%">Allele Frequency of f</th>
+                </tr>
+            <br>
+            <table id="chiTable">
+                <tbody><tr>
+                    <th style="width: 25%">Category</th>
+                    <th style="width: 25%">Observed</th>
+                    <th style="width: 25%">Expected</th>
+                    <th style="width: 25%">(O-E)<sup>2</sup>/E</th>
+                </tr>
+            </table>
+        </div>
+    </section>
+    <footer>
+        Please cite:
+        (Website Data)<br>
+        Above every table filled in using this program<br>
+        Program by Jake Neilson under Bradley Jake Nielson Industries<br>
+        Copyright 2024 All Rights Reserved<br>
+        Report Errors to Jake Neilson at jacob.neilson@stu.hpisd.org<br>
+    </footer>
+    <script>
+        const table = document.getElementById("table");
+        let rows = [];
+        
+        for (let i = 0; i < 5; i++) {
+            rows[i] = document.createElement("tr");
+            let head = document.createElement("th");
+            head.appendChild(document.createTextNode("" + (i + 1)));
+            rows[i].appendChild(head);
+            table.appendChild(rows[i]);
+        }
+        
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 8; j++) {
+                rows[i].appendChild(document.createElement("td"));
+            }
+        }
+        
+        const chiTable = document.getElementById("chiTable");
+        let chiRows = [];
+        
+        for (let i = 0; i < 4; i++) {
+            const categories = ["FF (p\u00B2)", "Ff (2pq)", "ff (q\u00B2)", "Totals"];
+            chiRows[i] = document.createElement("tr");
+            let head = document.createElement("th");
+            head.appendChild(document.createTextNode(categories[i]));
+            chiRows[i].appendChild(head);
+            chiTable.appendChild(chiRows[i]);
+        }
+        
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 3; j++) {
+                chiRows[i].appendChild(document.createElement("td"));
+            }
+        }
+        
+        function print(str, id) {
+            document.getElementById(id).innerHTML = str;
+        }
+        
+        function resetTable(bool) {
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 8; j++) {
+                    rows[i].lastChild.remove();
+                }
+            }
+            if (bool) {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        chiRows[i].lastChild.remove();
+                    }
+                }
+            }
+        }
+        
+        function getValues(dom, rec) {
+            let bag = [];
+            let final = [0, 0, 0];
+            for (let i = 0; i < dom; i++) {
+                bag[i] = 0;
+            }
+            for (let i = 0; i < rec; i++) {
+                bag[dom + i] = 1;
+            }
+            for (let i = 0; i < (dom + rec) / 2; i++) {
+                let curr = 0;
+                for (let j = 0; j < 2; j++) {
+                    let temp;
+                    while (true) {
+                        temp = Math.floor(Math.random() * bag.length);
+                        if (bag[temp] !== -1) {
+                            break;
+                        }
+                    }
+                    curr += bag[temp];
+                    bag[temp] = -1;
+                }
+                final[curr]++;
+            }
+            return final;
+        }
+        
+        function makeCell(str) {
+            let cell = document.createElement("td");
+            cell.appendChild(document.createTextNode(str));
+            return cell;
+        }
+        
+        function killHalf(pop) {
+            let left = pop;
+            for (let i = 0; i < pop; i++) {
+                if (Math.random() < 0.5) {
+                    left--;
+                }
+            }
+            return left;
+        }
+        
+        function chiSquare(temp) {
+            let sum = 0;
+            for (let i = 0; i < 3; i++) {
+                let chiVals = [];
+                // 0 O, 1 E, 2 x
+                chiVals[0] = temp[i]
+                if (i === 1) {
+                    chiVals[1] = 0.25 * temp[5];
+                }
+                else {
+                    chiVals[1] = 0.125 * temp[5];
+                }
+                chiVals[2] = Math.pow(chiVals[0] - chiVals[1], 2) / chiVals[1];
+                sum += chiVals[2];
+                for (let j = 0; j < 3; j++) {
+                    chiRows[i].appendChild(makeCell(chiVals[j]));
+                }
+            }
+            chiRows[3].appendChild(makeCell(temp[5] / 2));
+            chiRows[3].appendChild(document.createElement("td"));
+            chiRows[3].appendChild(makeCell("X\u00B2 = " + sum));
+        }
+        
+        function partOne() {
+            resetTable(true);
+            let temp;
+            // 0 homoDom, 1 hetero, 2 homoRec, 3 dom, 4 rec, 5 total, 6 domFreq, 7 recFreq
+            for (let i = 0; i < 5; i++) {
+                temp = getValues(50, 50);
+                temp.push(temp[0] * 2 + temp[1]);
+                temp.push(temp[2] * 2 + temp[1]);
+                temp.push(temp[3] + temp[4]);
+                temp.push(temp[3] / temp[5]);
+                temp.push(temp[4] / temp[5]);
+                for (let j = 0; j < 8; j++) {
+                    rows[i].appendChild(makeCell(temp[j]));
+                }
+            }
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 3; j++) {
+                    chiRows[i].appendChild(document.createElement("td"));
+                }
+            }
+        }
+        
+        function partTwo() {
+            resetTable(true);
+            let temp;
+            let rec = 50;
+            // 0 homoDom, 1 hetero, 2 homoRec, 3 dom, 4 rec, 5 total, 6 domFreq, 7 recFreq
+            for (let i = 0; i < 5; i++) {
+                temp = getValues(50, rec);
+                temp[2] = 0;
+                temp.push(temp[0] * 2 + temp[1]);
+                temp.push(temp[1]);
+                rec = temp[4];
+                temp.push(temp[3] + temp[4]);
+                temp.push(temp[3] / temp[5]);
+                temp.push(temp[4] / temp[5]);
+                for (let j = 0; j < 8; j++) {
+                    rows[i].appendChild(makeCell(temp[j]));
+                }
+            }
+            chiSquare(temp);
+        }
+        
+        function partThree() {
+            resetTable(true);
+            let temp;
+            let rec = 50;
+            let dom = 50;
+            // 0 homoDom, 1 hetero, 2 homoRec, 3 dom, 4 rec, 5 total, 6 domFreq, 7 recFreq
+            for (let i = 0; i < 5; i++) {
+                temp = getValues(dom, rec);
+                temp[0] = killHalf(temp[0]);
+                temp[2] = 0;
+                temp.push(temp[0] * 2 + temp[1]);
+                dom = temp[3];
+                temp.push(temp[1]);
+                rec = temp[4];
+                temp.push(temp[3] + temp[4]);
+                temp.push(temp[3] / temp[5]);
+                temp.push(temp[4] / temp[5]);
+                for (let j = 0; j < 8; j++) {
+                    rows[i].appendChild(makeCell(temp[j]));
+                }
+            }
+            chiSquare(temp);
+        }
+        
+        function partFour() {
+            resetTable(true);
+            let temp;
+            // 0 homoDom, 1 hetero, 2 homoRec, 3 dom, 4 rec, 5 total, 6 domFreq, 7 recFreq
+            let domRemoved = Math.floor(Math.random() * 40);
+            let recRemoved = 40 - domRemoved;
+            for (let i = 0; i < 5; i++) {
+                temp = getValues(50 - domRemoved, 50 - recRemoved);
+                temp.push(temp[0] * 2 + temp[1]);
+                temp.push(temp[2] * 2 + temp[1]);
+                temp.push(temp[3] + temp[4]);
+                temp.push(temp[3] / temp[5]);
+                temp.push(temp[4] / temp[5]);
+                for (let j = 0; j < 8; j++) {
+                    rows[i].appendChild(makeCell(temp[j]));
+                }
+            }
+            chiSquare(temp);
+        }
+        
+        function partFive() {
+            resetTable(true);
+            let temp;
+            // 0 homoDom, 1 hetero, 2 homoRec, 3 dom, 4 rec, 5 total, 6 domFreq, 7 recFreq
+            for (let i = 0; i < 5; i++) {
+                temp = getValues(70, 50);
+                temp.push(temp[0] * 2 + temp[1]);
+                temp.push(temp[2] * 2 + temp[1]);
+                temp.push(temp[3] + temp[4]);
+                temp.push(temp[3] / temp[5]);
+                temp.push(temp[4] / temp[5]);
+                for (let j = 0; j < 8; j++) {
+                    rows[i].appendChild(makeCell(temp[j]));
+                }
+            }
+            chiSquare(temp);
+        }
+    </script>
+    
+</body></html>

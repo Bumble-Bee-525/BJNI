@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Basic Settings-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+    
+    <!--Title and Favicon-->
+    <title>DNA Sequence Analyzer</title>
+    <link rel="icon" type="image/x-icon" href="../static/images/favicon.png">
+    
+    <!--Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <!--css for easter egg-->
+    <style>
+        #a10
+        {
+            position: relative;
+            display: none;
+        }
+        
+        @keyframes airstrike
+        {
+            0%     {left: -25%; top: 0%; display: none;}
+            1%     {left: -24%; top: 0%; display: inline;}
+            20%    {left: 0%; top: 0%;}
+            40%    {left: 25%; top: 0%;}
+            60%    {left: 50%; top: 0%;}
+            80%    {left: 75%; top: 0%;}
+            100%   {left: 100%; top: 0%; display: none;}
+        }
+        
+        .match
+        {
+            background-color: #4abb52;
+            color: black;
+            padding: 0px;
+        }
+        
+        .clash
+        {
+            background-color: #dc3545;
+            color: black;
+            padding: 0px;
+        }
+    </style>
+  </head>
+  <body>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
+      <div class="container-fluid">
+        <!--Logo-->
+        <a class="navbar-brand" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+          <img src="../static/images/logoBJ.png" width="auto" style="height: 4rem;">
+        </a>
+        <!--Toggle button for small devices-->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--Searchbar for NCBI-->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <div class="navbar-nav">
+            <a class="nav-link" href="/templates/about.html">About us</a>
+            <a class="nav-link mx-2" href="/">Home</a>
+            <form class="d-flex" role="search" action="https://www.ncbi.nlm.nih.gov/gene/" target="_blank" id="form">
+              <input class="form-control me-2" id="genusInput" name="term" type="search" placeholder="Type in animal genus" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <br>
+    
+    <!--easter egg-->
+    <div class="alert alert-danger text-center">If you are experiencing issues and you are in 7th period: Skill issue</div>
+    <img src="../static/images/a10.png" id="a10">
+    <audio id="a10Sound" src="https://codehs.com/uploads/e4f7baa6293733ae3d7a2430d9dad239"></audio>
+      <p class="w-75 text-center" style="margin: auto;">Program by Bradley Liang and Jake Neilson under Bradley Jake Neilson Industries</p>
+      <p class="w-75 text-center" style="margin: auto;">Copyright 2024 All Rights Reserved</p>
+      <p class="w-75 text-center" style="margin: auto;">Credit us or else we will airstrike u.</p>
+      <br>
+    <!--Contains all the outputs-->
+    <div class="justify-content-center w-75 container" style="border: 2px solid #4abb52; border-radius: 5px;">
+      <div class="input-group mb-3 mt-3">
+        <span class="input-group-text" id="speciesAmountLabel">Species amount: 2</span>
+        <input class="form-range" type="range" oninput="selectAmount();" value="2" id="speciesAmountSelector" min="2" max="10" step="1">
+      </div>
+
+      <!--Display differences-->
+      <div class="input-group mb-3 mt-3" id="sequenceDisplayContainer">
+        <span class="input-group-text">DNA Display 3000000</span>
+        <textarea class="form-control" id="sequenceDisplay" style="font-family: 'Lucida Console'; color: #4abb52; background: #001000;" disabled aria-label="With textarea" rows="5">Welcome to the Genome Machine 3000000! Use the slider above to select how many species you wish to compare. Then paste, type, or upload a FASTA file in each textbox. You can find these sequences by using the search bar on the top right. Additional Credit to user "ppillot" on Github for one of the alignment algorithms used.</textarea>
+      </div>
+      <img src="../static/images/explosion.gif" id="explosion" class="mb-3 mt-3" style="display: none">
+      
+      <div class="input-group mb-3 mt-3">
+          <span class="input-group-text">DNA Highlighter 50000</span>
+          <div class="form-control" id="sequenceHighlight" style="font-family: 'Lucida Console'; color: #4abb52; background: #001000; white-space: nowrap; overflow: auto;"></div>
+      </div>
+      
+      <!--Button to clear all inputs-->
+      <button type="button" class="btn btn-success mb-3" onclick="clearAll();">Clear Everything</button>
+      <button type="button" class="btn btn-danger mb-3" onclick="airstrike();">REALLY Clear Everything</button>
+    </div><br><br><br>
+    
+    
+    
+    
+    <!--Contains all sequence inputs for the user-->
+    <div id="sequencesContainer" class="justify-content-center w-75 container" style="border: 2px solid #4abb52; border-radius: 5px;">
+      <!--Text field for DNA sequences-->
+      <div class="input-group">
+        <span class="input-group-text">Enter DNA sequence #1</span>
+        <textarea class="form-control" id="sequenceInput0" aria-label="With textarea" rows="10" oninput="analyzeAllAtOnce();"></textarea>
+      </div>
+      <!--File input element-->
+      <div class="input-group mb-3 mt-3">
+        <span class="input-group-text">Upload text file (FASTA or TXT)</span>
+        <input class="form-control" type="file" id="fileInput0" onchange="loadFile(this, 0);">
+      </div><hr>
+      
+      <!--Text field for DNA sequences-->
+      <div class="input-group">
+        <span class="input-group-text">Enter DNA sequence #2</span>
+        <textarea class="form-control" id="sequenceInput1" aria-label="With textarea" rows="10" oninput="analyzeAllAtOnce();"></textarea>
+      </div>
+      <!--File input element-->
+      <div class="input-group mb-3 mt-3">
+        <span class="input-group-text">Upload text file (FASTA or TXT)</span>
+        <input class="form-control" type="file" id="fileInput1" onchange="loadFile(this, 1);">
+      </div><hr>
+    </div>
+
+    <!--https://new-sandbox-program-1-8491458.codehs.me/index.html-->
+    
+    
+    
+    
+    <!--Bootstrap-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    <!--The library we used below is licensed under MIT license. Credit goes to ppillot on Github for making this-->
+    <script src="https://cdn.jsdelivr.net/npm/biomsa/dist/biomsa.js"></script>
+    
+    <!--adds COX1 to search-->
+    <script>
+      // Prevent the default form submission
+      document.getElementById('form').addEventListener('submit', function(event) {event.preventDefault();
+  
+      // Get the genus
+      var inputValue = document.getElementById('genusInput').value;
+      inputValue = inputValue.replaceAll(" cox1", "")
+
+      //add cox1 to genus input field
+      var termToAdd = ' cox1';
+      document.getElementById('genusInput').value = inputValue + termToAdd;
+
+      //Submit that crap
+      console.log("GO");
+      this.submit();
+      });
+    </script>
+    
+    <!--script for sequence inputs-->
+    <script>
+        //I apologize to anyone who ever has to read this code. Good luck lol
+        
+        
+        
+        //store element in js
+        const speciesAmountSelector = document.getElementById("speciesAmountSelector");
+        const sequencesContainer = document.getElementById("sequencesContainer");
+        const speciesAmountLabel = document.getElementById("speciesAmountLabel");
+        const sequenceDisplay = document.getElementById("sequenceDisplay");
+        const sequenceHighlight = document.getElementById("sequenceHighlight");
+
+        //prevents scrolling which might mess people up
+        speciesAmountSelector.addEventListener("wheel", function(event)
+        {
+            speciesAmountSelector.blur();
+        })
+        
+        
+        //function that changes the amount of inputs
+        function selectAmount()
+        {
+            let speciesAmount = speciesAmountSelector.value;
+
+            //delete all the stuff that was in the container before
+            sequencesContainer.innerHTML = "";
+            clearDisplay();
+            
+            //add new ones in
+            for (let i = 0; i < speciesAmount; i++)
+            {
+                //use atrocious code to create new element
+                //Probably should have used an array instead of clunky numbering id system but whatevs
+                const newInput = document.createElement("div");
+                sequencesContainer.appendChild(newInput);
+                newInput.outerHTML = "<!--Text field for DNA sequences--><div class='input-group'><span class='input-group-text'>Enter DNA sequence #" + (i + 1) + "</span><textarea class='form-control' id='sequenceInput" + i + "' aria-label='With textarea' rows='10' oninput='analyzeAllAtOnce()'></textarea></div><!--File input element--><div class='input-group mb-3 mt-3'><span class='input-group-text'>Upload text file (FASTA or TXT)</span><input class='form-control' type='file' id='fileInput" + i + "'  onchange='loadFile(this, "+ i + ");'></div><hr>";
+            }
+            
+            speciesAmountLabel.innerText = "Species amount: " + speciesAmount;
+        }
+        
+        
+        //sphagetti code that handles file inputs
+        function loadFile(fileElement, i)
+        {
+           //this code is probably unsafe, i forgot how it works
+           let fileCursor = new FileReader();
+           fileCursor.onload = function(){
+               document.getElementById("sequenceInput" + i).textContent += fileCursor.result;
+               analyzeAllAtOnce();
+           }
+           
+           fileCursor.readAsText(fileElement.files[0]);
+        }
+        
+        //takes in a sequence in FASTA format and returns the name
+        function getName(text)
+        {
+            return text.substring(text.indexOf(">") + 1, text.indexOf("\n", text.indexOf(">")));
+        }
+        
+        //clears all text from the display elements
+        function clearDisplay()
+        {
+            sequenceDisplay.value = "";
+            sequenceHighlight.innerHTML = "";
+        }
+        
+        
+        // Seriously, I honestly don't know why this sphagetti code is actually working
+        async function analyzeAllAtOnce()
+        {
+            //declare a bunch of things so they don't get declared over and over later
+            //I don't know if this is how you're supposed to do things in JS but it works
+            let speciesAmount = sequencesContainer.children.length / 3;
+            const format = /[>].+\n[atcgATCG\n]+/;
+            const speciesData = {"names": [], "sequences": [], "html": [], "matchStreaks": [], "clashStreaks": []};
+            
+            let currentSpecies = "";
+            let otherSpecies = "";
+            let currentName = "";
+            let otherName = "";
+            let currentSum = 0;
+            
+            clearDisplay();
+            
+            //loading screen
+            sequenceDisplay.value = "Loading . . .";
+            sequenceHighlight.innerHTML = "Loading . . .";
+            
+            //for each species, add it to the array
+            for (let i = 0; i < speciesAmount; i++)
+            {
+                //get genome
+                currentSpecies = document.getElementById("sequenceInput" + i).value;
+                    
+                //RegEx before aligning, display error if not correct, return function
+                if (!format.test(currentSpecies))
+                {
+                    sequenceDisplay.value = "Incorrect formatting or empty field";
+                    sequenceHighlight.innerHTML = "¯\\_(ツ)_/¯";
+                    return;
+                }
+                    
+                //chop off name and remove whitespace before starting alignment
+                currentName = getName(currentSpecies);
+                currentSpecies = currentSpecies.substring(currentSpecies.indexOf("\n", currentSpecies.indexOf(">")) + 1).replaceAll("\n", "");
+                
+                //add current species to array
+                speciesData.names.push(currentName);
+                speciesData.sequences.push(currentSpecies);
+                speciesData.html.push("");
+                speciesData.matchStreaks.push(false);
+                speciesData.clashStreaks.push(false);
+            }
+            
+            
+            
+            
+            
+            
+            //Align sequences, Credit to ppillot for biomsa.align function
+            let resultPromise = biomsa.align(speciesData.sequences).then( 
+            function (result)
+            {
+                speciesData.sequences = result;
+            },
+            function (error)
+            {
+                sequenceDisplay.value = error + "\n\n\nSorry, an error occured during alignment of sequences. Try refreshing or closing the window and reopening."
+                sequenceHighlight.innerHTML = "¯\\_(ツ)_/¯";
+            });
+        
+        
+        
+        
+        
+        
+        
+            //wait for alignment to finish
+            await resultPromise;
+            
+            //Count differences
+            sequenceDisplay.value = "";
+            
+            //for each species
+            for (let i = 0; i < speciesAmount - 1; i++)
+            {
+                currentSpecies = speciesData.sequences[i];
+                currentName = speciesData.names[i]
+                //for each other species
+                for (let j = i + 1; j < speciesAmount; j++)
+                {
+                    otherSpecies = speciesData.sequences[j];
+                    otherName = speciesData.names[j];
+                    currentSum = 0;
+                    //count the amount of differences
+                    for (let k = 0; k < currentSpecies.length; k++)
+                    {
+                        if (currentSpecies.charAt(k) != otherSpecies.charAt(k))
+                        {
+                            currentSum++;
+                        }
+                    }
+                    
+                    sequenceDisplay.value += "> " + currentName + " has " + currentSum + " differences with " + otherName + "\n";
+                }
+            }
+            
+            
+            //highlight differences
+            //for each index
+            for (let i = 0; i < speciesData.sequences[0].length; i++)
+            {
+                //keeps track of the maximum
+                const counts = {
+                    "A": 0,
+                    "T": 0,
+                    "G": 0,
+                    "C": 0,
+                    "max": "A",
+                }
+                
+                //loop through each species and find maximum
+                for (let j = 0; j < speciesAmount; j++)
+                {
+                    let base = speciesData.sequences[j].charAt(i);
+                    counts[base]++;
+                    if (counts[base] > counts[counts.max])
+                    {
+                        counts.max = base;
+                    }
+                }
+                
+                //loop through each species and highlight
+                for (let j = 0; j < speciesAmount; j++)
+                {
+                    let base = speciesData.sequences[j].charAt(i);
+                    //if it is equal to the most common base
+                    if (counts[counts.max] > 1 && base == counts.max)
+                    {
+                        //if we're continuing a streak
+                        if (speciesData.matchStreaks[j])
+                        {
+                            speciesData.html[j] += base;
+                        }
+                        //if we're not
+                        else
+                        {
+                            speciesData.html[j] += "</mark><mark class='match'>" + base;
+                            speciesData.matchStreaks[j] = true;
+                            speciesData.clashStreaks[j] = false;
+                        }
+                    }
+                    
+                    //if it is not equal to the most common base
+                    else
+                    {
+                        //if it we're continuing a streak
+                        if (speciesData.clashStreaks[j])
+                        {
+                            speciesData.html[j] += base;
+                        }
+                        
+                        //if we're not
+                        else
+                        {
+                            speciesData.html[j] += "</mark><mark class='clash'>" + base;
+                            speciesData.matchStreaks[j] = false;
+                            speciesData.clashStreaks[j] = true;
+                        }
+                    }
+                }
+            }
+            
+            //clear display
+            sequenceHighlight.innerHTML = "";
+            
+            //for each species add its html to the full string of html
+            let fullHtml = "";
+            for (let i = 0; i < speciesAmount; i++)
+            {
+                fullHtml += "<p style='margin-bottom: 0px;'>" + speciesData.names[i] + "</p><p>" + speciesData.html[i].substring(7) + "</mark></p>";
+                console.log(speciesData.html[i].substring(7) + "</mark>");
+            }
+            
+            //set the display's html to the stuff we just created
+            sequenceHighlight.innerHTML = fullHtml;
+        }
+
+        
+        //Clear inputs
+        function clearAll()
+        {
+            if (window.confirm("Are you sure you want to clear?"))
+            {
+                clearDisplay();
+                sequencesContainer.innerHTML = "";
+                selectAmount();
+            }
+        }
+        
+        //Easter egg
+        //look I got bored ok?
+        function airstrike()
+        {
+            //make sure the user really wants to do this
+            if (window.confirm("Are you sure?"))
+            {
+                //clear the terminals and inputs
+                clearDisplay();
+                sequencesContainer.innerHTML = "";
+                selectAmount();
+                
+                //make jet visible
+                document.getElementById("a10").style.display = "inline";
+                //start animation
+                document.getElementById("a10").style.animation = "airstrike 3s linear 0s 1";
+                //show explosion
+                document.getElementById("explosion").style="display: block; margin: auto;";
+                //hide display
+                document.getElementById("sequenceDisplayContainer").style.display = "none";
+                //play jet sound
+                document.getElementById("a10Sound").play();
+                
+                //once animation ends:
+                setTimeout(function()
+                {
+                    //get rid of animation attribute and make plane invisible
+                    document.getElementById("a10").style.animation = "";
+                    document.getElementById("a10").style.display = "none";
+                    //redisplay the sequence display
+                    document.getElementById("sequenceDisplayContainer").style.display = "";
+                    //make explosion invisible
+                    document.getElementById("explosion").style="display: none";
+                }, 3000);
+            
+            }
+        }
+    </script>
+  </body>
+</html>
